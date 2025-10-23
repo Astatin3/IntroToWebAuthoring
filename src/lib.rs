@@ -1,5 +1,7 @@
+// mod activities;
 mod app;
 mod render;
+mod views;
 
 use wasm_bindgen::{Clamped, prelude::*};
 use web_sys::ImageData;
@@ -8,7 +10,10 @@ use web_sys::ImageData;
 use render::buffer::ImgBuffer;
 use render::rand::Rnd;
 
-use crate::{app::App, render::Renderer};
+use crate::{
+    app::{App, Cursor, set_cursor},
+    render::Renderer,
+};
 
 #[wasm_bindgen]
 extern "C" {
@@ -28,6 +33,7 @@ pub fn init(canvas: &web_sys::HtmlCanvasElement, width: u32, height: u32) -> App
     canvas.set_height(cheight);
 
     log!("WASM Successfully initialized!");
+    // set_cursor(Cursor::Auto);
 
     let mut renderer = Renderer {
         ctx: canvas
@@ -65,17 +71,13 @@ pub fn draw(app: &mut App) {
 }
 
 #[wasm_bindgen]
-pub fn click(app: &mut App, x: i32, y: i32) {
+pub fn click(app: &mut App, x: f32, y: f32) {
     // ctx.img.randomize(&mut ctx.rand);
     // draw::draw(ctx);
+    app.l_click(x, y);
+}
 
-    app.renderer.circle(x, y, 20, (255, 255, 255));
-
-    let data = ImageData::new_with_u8_clamped_array_and_sh(
-        Clamped(&app.renderer.img.data),
-        app.renderer.img.width(),
-        app.renderer.img.height(),
-    )
-    .unwrap();
-    app.renderer.ctx.put_image_data(&data, 0., 0.).unwrap();
+#[wasm_bindgen]
+pub fn mouse_move(app: &mut App, x: f32, y: f32) {
+    app.mouse_move(x, y);
 }

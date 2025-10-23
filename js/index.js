@@ -16,11 +16,15 @@ addEventListener("TrunkApplicationStarted", (event) => {
     window.wasmBindings.resize(context, width, height);
   });
 
-  canvas.addEventListener("click", (e) => {
-    // console.log(e);
+  canvas.addEventListener("mousemove", (event) => {
+    window.wasmBindings.mouse_move(context, event.pageX, event.pageY);
+  });
 
-    // [width, height] = [window.innerWidth, window.innerHeight];
-    // console.log("Window resized: (", width, ", ", height, ")");
+  canvas.addEventListener("click", (e) => {
     window.wasmBindings.click(context, e.pageX, e.pageY);
   });
 });
+
+// export function cursor(name) {
+//   document.body.style.cursor = name;
+// }
