@@ -1,7 +1,13 @@
+use fontdue::layout::{CoordinateSystem, Layout, LayoutSettings, TextStyle};
 use wasm_bindgen::{Clamped, prelude::*};
 use web_sys::ImageData;
 
-use crate::render::{RESOLUTION, buffer::ImgBuffer, calc_resolution, rand::Rnd};
+use crate::render::{
+    RESOLUTION,
+    buffer::{Bitmap, ImgBuffer},
+    calc_resolution,
+    rand::Rnd,
+};
 
 #[wasm_bindgen]
 pub struct Renderer {
@@ -16,6 +22,8 @@ pub struct Renderer {
 
     pub distortion_x: f32,
     pub distortion_y: f32,
+    pub ratio_x: f32,
+    pub ratio_y: f32,
 }
 
 impl Renderer {
@@ -42,6 +50,8 @@ impl Renderer {
             actual_height: height,
             distortion_x: dist_x,
             distortion_y: dist_y,
+            ratio_x: cwidth as f32 / width as f32,
+            ratio_y: cheight as f32 / height as f32,
         }
     }
 
@@ -54,6 +64,9 @@ impl Renderer {
         self.actual_height = height;
         self.distortion_x = dist_x;
         self.distortion_y = dist_y;
+
+        self.ratio_x = cwidth as f32 / width as f32;
+        self.ratio_y = cheight as f32 / height as f32;
 
         self.img.resize(cwidth, cheight);
         self.ctx.canvas().unwrap().set_width(cwidth);
@@ -77,10 +90,7 @@ impl Renderer {
 
 impl Renderer {
     pub fn undistort(&self, x: f32, y: f32) -> (f32, f32) {
-        (
-            x * (self.canvas_width as f32 / self.actual_width as f32),
-            y * (self.canvas_height as f32 / self.actual_height as f32),
-        )
+        (x * self.ratio_x, y * self.ratio_y)
     }
 
     /// Draw a rectangle centered at (cx, cy) with the given width and height.
@@ -159,3 +169,25 @@ impl Renderer {
         }
     }
 }
+
+// // Fonts
+// impl Renderer {
+//     pub fn rasterize_font(
+//         &mut self,
+//         x: i32,
+//         y: i32,
+//         text: &str,
+//         font_scale: f32,
+//         font: FontHandle,
+//     ) {
+//     }
+
+//     pub fn measure_text_bounds(
+//         &mut self,
+//         text: &str,
+//         font_scale: i32,
+//         font: FontHandle,
+//     ) -> (i32, i32) {
+//         (100, 100)
+//     }
+// }

@@ -1,5 +1,6 @@
 // mod activities;
 mod app;
+mod fonts;
 mod render;
 mod views;
 
@@ -28,32 +29,9 @@ macro_rules! log {
 
 #[wasm_bindgen]
 pub fn init(canvas: &web_sys::HtmlCanvasElement, width: u32, height: u32) -> App {
-    let (cwidth, cheight, dist_x, dist_y) = render::calc_resolution(width, height);
-    canvas.set_width(cwidth);
-    canvas.set_height(cheight);
-
     log!("WASM Successfully initialized!");
-    // set_cursor(Cursor::Auto);
 
-    let mut renderer = Renderer {
-        ctx: canvas
-            .get_context("2d")
-            .unwrap()
-            .unwrap()
-            .dyn_into::<web_sys::CanvasRenderingContext2d>()
-            .unwrap(),
-        img: ImgBuffer::new(width, height),
-        rand: Rnd::new(9825782),
-
-        canvas_width: cwidth,
-        canvas_height: cheight,
-        actual_width: width,
-        actual_height: height,
-
-        distortion_x: dist_x,
-        distortion_y: dist_y,
-    };
-
+    let mut renderer = Renderer::new(canvas, width, height);
     renderer.resize(width, height);
 
     App::new(renderer)

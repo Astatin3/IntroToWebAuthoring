@@ -54,7 +54,7 @@ impl App {
     }
 
     pub fn draw(&mut self) {
-        if let Some(view) = &self.root_view {
+        if let Some(view) = &mut self.root_view {
             let (width, height) = (
                 self.renderer.actual_width.clone() as f32,
                 self.renderer.actual_height.clone() as f32,

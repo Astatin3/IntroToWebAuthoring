@@ -29,6 +29,19 @@ impl ImgBuffer {
         }
     }
 
+    pub fn overlay_bitmap(&mut self, other: &Bitmap, xoffset: usize, yoffset: usize) {
+        for y in 0..other.height {
+            for x in 0..other.width {
+                let offset = (y + yoffset) * self.width as usize + (x + xoffset);
+                let color = other.data[y * other.width + x];
+                self.data[offset * 4] = color;
+                self.data[offset * 4 + 1] = color;
+                self.data[offset * 4 + 2] = color;
+                self.data[offset * 4 + 3] = 255;
+            }
+        }
+    }
+
     pub fn resize(&mut self, width: u32, height: u32) {
         self.data = vec![0; (width * height * 4) as usize];
         self.width = width;
@@ -371,3 +384,63 @@ impl ImgBuffer {
 //     //     self.data[y*self.width + x] = color;
 //     // }
 // }
+
+pub struct Bitmap {
+    pub data: Vec<u8>,
+    pub width: usize,
+    pub height: usize,
+}
+
+impl Bitmap {
+    pub fn new(width: usize, height: usize) -> Self {
+        Self {
+            data: vec![0; width * height],
+            width,
+            height,
+        }
+    }
+
+    pub fn from_data(data: Vec<u8>, width: usize, height: usize) -> Self {
+        // assert!(data.len() == width * height, "Invalid data length!");z
+        Self {
+            data,
+            width,
+            height,
+        }
+    }
+
+    pub fn overlay(&mut self, other: &Bitmap, xoffset: usize, yoffset: usize) {
+        for y in 0..other.height {
+            for x in 0..other.width {
+                self.data[(y + yoffset as usize) * self.width + (x + xoffset as usize)] =
+                    other.data[y * other.width + x];
+            }
+        }
+    }
+
+    /// Scale using nearest-neighbor (faster but lower quality)
+    pub fn scale(&self, scale_x: f32, scale_y: f32) -> Bitmap {
+        let new_width = (self.width as f32 * scale_x).round() as usize;
+        let new_height = (self.height as f32 * scale_y).round() as usize;
+
+        let mut new_data = vec![0u8; new_width * new_height];
+
+        for y in 0..new_height {
+            let src_y = ((y as f32) / scale_y) as usize;
+            let src_y = src_y.min(self.height - 1);
+
+            for x in 0..new_width {
+                let src_x = ((x as f32) / scale_x) as usize;
+                let src_x = src_x.min(self.width - 1);
+
+                new_data[y * new_width + x] = self.data[src_y * self.width + src_x];
+            }
+        }
+
+        Bitmap {
+            data: new_data,
+            width: new_width,
+            height: new_height,
+        }
+    }
+}

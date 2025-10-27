@@ -1,5 +1,4 @@
 use crate::{
-    log,
     render::Renderer,
     views::{Bounds, View},
 };
@@ -15,11 +14,11 @@ impl ColorRectView {
 }
 
 impl View for ColorRectView {
-    fn draw(&self, renderer: &mut Renderer, x: f32, y: f32, w: f32, h: f32) {
+    fn draw(&mut self, renderer: &mut Renderer, x: f32, y: f32, w: f32, h: f32) {
         renderer.rect_xywh(x as i32, y as i32, w as i32, h as i32, self.color);
-        log!("Draw");
+        // log!("Draw");
     }
     fn bounds(&self, _ph: f32, _pw: f32) -> (Bounds, Bounds) {
-        (Bounds::MatchParent, Bounds::Pixels(2200.))
+        (Bounds::MatchParent, Bounds::Pixels(200.))
     }
 }

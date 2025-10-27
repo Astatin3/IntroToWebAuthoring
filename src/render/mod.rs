@@ -4,7 +4,7 @@ mod renderer;
 
 pub use renderer::Renderer;
 
-pub const RESOLUTION: u32 = 1200;
+pub const RESOLUTION: u32 = 2000;
 
 pub fn calc_resolution(width: u32, height: u32) -> (u32, u32, f32, f32) {
     let aspect = width as f32 / height as f32;

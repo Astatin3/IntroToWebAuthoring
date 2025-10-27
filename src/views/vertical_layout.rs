@@ -11,10 +11,10 @@ impl VerticalLayout {
 }
 
 impl View for VerticalLayout {
-    fn draw(&self, renderer: &mut crate::render::Renderer, x: f32, y: f32, w: f32, h: f32) {
+    fn draw(&mut self, renderer: &mut crate::render::Renderer, x: f32, y: f32, w: f32, h: f32) {
         let mut cur_y = y;
 
-        for view in &self.views {
+        for view in &mut self.views {
             let (vx, vy) = view.bounds(w, h);
 
             let vx = match vx {
