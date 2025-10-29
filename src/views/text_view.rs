@@ -2,9 +2,8 @@ use fontdue::layout::{CoordinateSystem, Layout, LayoutSettings, TextStyle};
 
 use crate::{
     fonts::{FONTS, FontHandle},
-    log,
     render::{Renderer, buffer::Bitmap},
-    views::{Bounds, View},
+    views::{Bounds, LayoutView, View},
 };
 
 pub struct TextView {
@@ -12,6 +11,7 @@ pub struct TextView {
     text: String,
     scale: f32,
     font: FontHandle,
+    bounds: (Option<Bounds>, Option<Bounds>),
 }
 
 impl TextView {
@@ -22,12 +22,22 @@ impl TextView {
             ..LayoutSettings::default()
         });
 
-        Self {
+        let mut s = Self {
             layout,
             text,
             scale: 20.,
             font: FontHandle::AtiksonHyperlegibleRegular,
-        }
+            bounds: (None, None),
+        };
+
+        let font = (s.font as usize).clone();
+
+        s.layout.clear();
+
+        s.layout
+            .append(&FONTS, &TextStyle::new(&s.text, s.scale, font));
+
+        s
     }
 }
 
@@ -45,13 +55,6 @@ impl View for TextView {
         // renderer.rect_xywh(x as i32, y as i32, w as i32, h as i32, self.color);
 
         let (x, y) = renderer.undistort(x as f32, y as f32);
-
-        let font = (self.font as usize).clone();
-
-        self.layout.clear();
-
-        self.layout
-            .append(&FONTS, &TextStyle::new(&self.text, self.scale, font));
 
         let (mut width, mut height): (usize, usize) = (0, 0);
         for glyph in self.layout.glyphs() {
@@ -79,7 +82,21 @@ impl View for TextView {
 
         // new_bitmap
     }
+}
+
+impl LayoutView for TextView {
+    fn set_bounds(&mut self, width: Option<Bounds>, height: Option<Bounds>) {
+        self.bounds = (width, height);
+    }
     fn bounds(&self, _ph: f32, _pw: f32) -> (Bounds, Bounds) {
-        (Bounds::MatchParent, Bounds::Pixels(200.))
+        // let (x, y) = renderer.undistort(x as f32, y as f32);
+
+        let (mut width, mut height): (usize, usize) = (0, 0);
+        for glyph in self.layout.glyphs() {
+            width = width.max(glyph.x as usize + glyph.width);
+            height = height.max(glyph.y as usize + glyph.height);
+        }
+
+        (Bounds::Pixels(width as f32), Bounds::Pixels(height as f32))
     }
 }

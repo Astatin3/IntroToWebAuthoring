@@ -1,5 +1,5 @@
 // use crate::console_log;
-use crate::{log, render::rand};
+use crate::render::rand;
 
 // macro_rules! log {
 //     ($($t:tt)*) => (console_log(&format_args!($($t)*).to_string()))
@@ -7,14 +7,14 @@ use crate::{log, render::rand};
 
 pub struct ImgBuffer {
     pub data: Vec<u8>,
-    width: u32,
-    height: u32,
+    width: usize,
+    height: usize,
 }
 
 impl ImgBuffer {
-    pub fn new(width: u32, height: u32) -> Self {
+    pub fn new(width: usize, height: usize) -> Self {
         ImgBuffer {
-            data: vec![127; (width * height * 4) as usize],
+            data: vec![127; width * height * 4],
             width,
             height,
         }
@@ -30,29 +30,35 @@ impl ImgBuffer {
     }
 
     pub fn overlay_bitmap(&mut self, other: &Bitmap, xoffset: usize, yoffset: usize) {
+        let length = self.data.len();
         for y in 0..other.height {
             for x in 0..other.width {
-                let offset = (y + yoffset) * self.width as usize + (x + xoffset);
+                // Calculate the offset for the current pixel in the buffer
+                // This uses bitshift instead of multiplication x4 for performance
+                let offset = ((y + yoffset) * self.width + (x + xoffset)) << 2;
+                if offset >= length {
+                    return;
+                }
                 let color = other.data[y * other.width + x];
-                self.data[offset * 4] = color;
-                self.data[offset * 4 + 1] = color;
-                self.data[offset * 4 + 2] = color;
-                self.data[offset * 4 + 3] = 255;
+                self.data[offset] = color;
+                self.data[offset + 1] = color;
+                self.data[offset + 2] = color;
+                self.data[offset + 3] = 255;
             }
         }
     }
 
-    pub fn resize(&mut self, width: u32, height: u32) {
-        self.data = vec![0; (width * height * 4) as usize];
+    pub fn resize(&mut self, width: usize, height: usize) {
+        self.data = vec![0; width * height * 4];
         self.width = width;
         self.height = height;
     }
 
-    pub fn width(&self) -> u32 {
+    pub fn width(&self) -> usize {
         self.width
     }
 
-    pub fn height(&self) -> u32 {
+    pub fn height(&self) -> usize {
         self.height
     }
 
@@ -62,8 +68,8 @@ impl ImgBuffer {
 }
 
 impl ImgBuffer {
-    pub fn set_pixel(&mut self, x: u32, y: u32, color: (u8, u8, u8)) {
-        let index = ((y * self.width + x) * 4) as usize;
+    pub fn set_pixel(&mut self, x: usize, y: usize, color: (u8, u8, u8)) {
+        let index = (y * self.width + x) * 4;
         self.data[index] = color.0;
         self.data[index + 1] = color.1;
         self.data[index + 2] = color.2;

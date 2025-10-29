@@ -1,5 +1,7 @@
 mod cursors;
 
+use std::time::Instant;
+
 pub use cursors::{Cursor, set_cursor};
 
 use wasm_bindgen::prelude::wasm_bindgen;
@@ -68,7 +70,7 @@ impl App {
 
 // App events
 impl App {
-    pub fn resize(&mut self, width: u32, height: u32) {
+    pub fn resize(&mut self, width: usize, height: usize) {
         self.renderer.resize(width, height);
         self.draw();
     }

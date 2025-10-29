@@ -28,7 +28,7 @@ macro_rules! log {
 }
 
 #[wasm_bindgen]
-pub fn init(canvas: &web_sys::HtmlCanvasElement, width: u32, height: u32) -> App {
+pub fn init(canvas: &web_sys::HtmlCanvasElement, width: usize, height: usize) -> App {
     log!("WASM Successfully initialized!");
 
     let mut renderer = Renderer::new(canvas, width, height);
@@ -38,7 +38,7 @@ pub fn init(canvas: &web_sys::HtmlCanvasElement, width: u32, height: u32) -> App
 }
 
 #[wasm_bindgen]
-pub fn resize(app: &mut App, width: u32, height: u32) {
+pub fn resize(app: &mut App, width: usize, height: usize) {
     app.resize(width, height);
 }
 

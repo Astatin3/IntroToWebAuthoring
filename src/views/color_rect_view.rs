@@ -1,15 +1,29 @@
 use crate::{
     render::Renderer,
-    views::{Bounds, View},
+    views::{
+        Bounds, LayoutView, View,
+        constraint_layout::{Constraint, ConstraintView},
+    },
 };
 
 pub struct ColorRectView {
     color: (u8, u8, u8),
+    bounds: (Option<Bounds>, Option<Bounds>),
+    constraints: (
+        Option<Constraint>,
+        Option<Constraint>,
+        Option<Constraint>,
+        Option<Constraint>,
+    ),
 }
 
 impl ColorRectView {
     pub fn new(r: u8, g: u8, b: u8) -> Self {
-        Self { color: (r, g, b) }
+        Self {
+            color: (r, g, b),
+            bounds: (None, None),
+            constraints: (None, None, None, None),
+        }
     }
 }
 
@@ -18,7 +32,44 @@ impl View for ColorRectView {
         renderer.rect_xywh(x as i32, y as i32, w as i32, h as i32, self.color);
         // log!("Draw");
     }
+}
+
+impl LayoutView for ColorRectView {
+    fn set_bounds(&mut self, width: Option<Bounds>, height: Option<Bounds>) {
+        self.bounds = (width, height);
+    }
     fn bounds(&self, _ph: f32, _pw: f32) -> (Bounds, Bounds) {
-        (Bounds::MatchParent, Bounds::Pixels(200.))
+        (
+            *self.bounds.0.as_ref().unwrap_or(&Bounds::Pixels(100.)),
+            self.bounds.1.unwrap_or(Bounds::Pixels(100.)),
+        )
+    }
+}
+
+impl ConstraintView for ColorRectView {
+    fn set_constraints(
+        &mut self,
+        top: Option<Constraint>,
+        left: Option<Constraint>,
+        right: Option<Constraint>,
+        bottom: Option<Constraint>,
+    ) {
+        self.constraints = (top, left, right, bottom)
+    }
+
+    fn get_constraints(
+        &self,
+    ) -> (
+        &Option<Constraint>,
+        &Option<Constraint>,
+        &Option<Constraint>,
+        &Option<Constraint>,
+    ) {
+        (
+            &self.constraints.0,
+            &self.constraints.1,
+            &self.constraints.2,
+            &self.constraints.3,
+        )
     }
 }

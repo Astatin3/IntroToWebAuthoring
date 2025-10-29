@@ -15,10 +15,10 @@ pub struct Renderer {
     pub(crate) img: ImgBuffer,
     pub(crate) rand: Rnd,
 
-    pub canvas_width: u32,
-    pub canvas_height: u32,
-    pub actual_width: u32,
-    pub actual_height: u32,
+    pub canvas_width: usize,
+    pub canvas_height: usize,
+    pub actual_width: usize,
+    pub actual_height: usize,
 
     pub distortion_x: f32,
     pub distortion_y: f32,
@@ -27,7 +27,7 @@ pub struct Renderer {
 }
 
 impl Renderer {
-    pub fn new(canvas: &web_sys::HtmlCanvasElement, width: u32, height: u32) -> Self {
+    pub fn new(canvas: &web_sys::HtmlCanvasElement, width: usize, height: usize) -> Self {
         let (cwidth, cheight, dist_x, dist_y) = calc_resolution(width, height);
 
         // let ctx = canvas.get_context("2d").unwrap().unwrap();
@@ -55,7 +55,7 @@ impl Renderer {
         }
     }
 
-    pub fn resize(&mut self, width: u32, height: u32) {
+    pub fn resize(&mut self, width: usize, height: usize) {
         let (cwidth, cheight, dist_x, dist_y) = calc_resolution(width, height);
 
         self.canvas_width = cwidth;
@@ -69,15 +69,15 @@ impl Renderer {
         self.ratio_y = cheight as f32 / height as f32;
 
         self.img.resize(cwidth, cheight);
-        self.ctx.canvas().unwrap().set_width(cwidth);
-        self.ctx.canvas().unwrap().set_height(cheight);
+        self.ctx.canvas().unwrap().set_width(cwidth as u32);
+        self.ctx.canvas().unwrap().set_height(cheight as u32);
     }
 
     pub fn update(&mut self) {
         let data = ImageData::new_with_u8_clamped_array_and_sh(
             Clamped(&self.img.data),
-            self.img.width(),
-            self.img.height(),
+            self.img.width() as u32,
+            self.img.height() as u32,
         )
         .unwrap();
         self.ctx.put_image_data(&data, 0., 0.).unwrap();
@@ -128,7 +128,7 @@ impl Renderer {
 
         for x in leftx as i32..rightx as i32 {
             for y in topy as i32..bottomy as i32 {
-                self.img.set_pixel(x as u32, y as u32, color);
+                self.img.set_pixel(x as usize, y as usize, color);
             }
         }
     }
@@ -163,7 +163,7 @@ impl Renderer {
         for x in leftx as i32..rightx as i32 {
             for y in topy as i32..bottomy as i32 {
                 if self.screen_dist_sq(x as f32, y as f32, cx, cy) <= r2 {
-                    self.img.set_pixel(x as u32, y as u32, color);
+                    self.img.set_pixel(x as usize, y as usize, color);
                 }
             }
         }

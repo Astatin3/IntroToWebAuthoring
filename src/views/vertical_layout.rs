@@ -1,12 +1,16 @@
-use crate::views::{Bounds, View};
+use crate::views::{Bounds, LayoutView, View};
 
 pub struct VerticalLayout {
-    pub views: Vec<Box<dyn View>>,
+    pub views: Vec<Box<dyn LayoutView>>,
+    pub bounds: (Option<Bounds>, Option<Bounds>),
 }
 
 impl VerticalLayout {
-    pub fn new(views: Vec<Box<dyn View>>) -> Self {
-        Self { views }
+    pub fn new(views: Vec<Box<dyn LayoutView>>) -> Self {
+        Self {
+            views,
+            bounds: (None, None),
+        }
     }
 }
 
@@ -33,6 +37,12 @@ impl View for VerticalLayout {
                 return;
             }
         }
+    }
+}
+
+impl LayoutView for VerticalLayout {
+    fn set_bounds(&mut self, width: Option<Bounds>, height: Option<Bounds>) {
+        self.bounds = (width, height);
     }
 
     fn bounds(&self, pw: f32, ph: f32) -> (Bounds, Bounds) {
