@@ -9,6 +9,7 @@ crate-type = ["cdylib"]
 [dependencies]
 fontdue = "0.9.3"
 lazy_static = "1.5.0"
+quick-xml = "0.38.3"
 wasm-bindgen = {version = "0.2.104"}
 web-sys = {version = "0.3.81", features = ['CanvasRenderingContext2d', 'Document', 'Element', 'HtmlCanvasElement', 'Window', 'ImageData']}
 

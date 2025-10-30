@@ -5,6 +5,7 @@ pub use cursors::{Cursor, set_cursor};
 use wasm_bindgen::prelude::wasm_bindgen;
 
 use crate::{
+    parser::{self, TEST_XML},
     render::Renderer,
     views::{View, default_view},
 };
@@ -36,8 +37,10 @@ impl App {
     pub fn new(renderer: Renderer) -> Self {
         let (width, height) = (renderer.actual_width, renderer.actual_height);
 
+        let root_view = parser::parse(TEST_XML);
+
         let mut this = App {
-            root_view: Some(default_view()),
+            root_view: Some(root_view),
             renderer,
             // current_activity: Some(0),
             state: AppState::new(),
@@ -49,6 +52,7 @@ impl App {
     }
 
     pub fn draw(&mut self) {
+        // self.renderer.img.randomize(&mut self.renderer.rand);
         if let Some(view) = &mut self.root_view {
             let (width, height) = (
                 self.renderer.actual_width.clone() as f32,

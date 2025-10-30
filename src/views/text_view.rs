@@ -78,6 +78,13 @@ impl View for TextView {
     fn resize(&mut self, x: f32, y: f32, w: f32, h: f32) {
         // todo!()
     }
+
+    fn from_tag(attributes: &std::collections::HashMap<String, String>) -> Self
+    where
+        Self: Sized,
+    {
+        todo!()
+    }
 }
 
 impl LayoutView for TextView {

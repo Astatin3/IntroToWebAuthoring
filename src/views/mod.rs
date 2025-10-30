@@ -1,6 +1,8 @@
+use std::collections::HashMap;
+
 use crate::{
     render::Renderer,
-    views::constraint_layout::{Constraint, ConstraintLayout, ConstraintView},
+    views::constraint_layout::{Constraint, ConstraintView},
 };
 
 mod color_rect_view;
@@ -8,13 +10,18 @@ mod constraint_layout;
 mod text_view;
 mod vertical_layout;
 
-use color_rect_view::ColorRectView;
-use text_view::TextView;
-use vertical_layout::VerticalLayout;
+pub use color_rect_view::ColorRectView;
+pub use constraint_layout::ConstraintLayout;
+pub use text_view::TextView;
+pub use vertical_layout::VerticalLayout;
 
 pub trait View {
     fn draw(&mut self, renderer: &mut Renderer, x: f32, y: f32, w: f32, h: f32);
     fn resize(&mut self, x: f32, y: f32, w: f32, h: f32);
+
+    fn from_tag(attributes: &HashMap<String, String>) -> Self
+    where
+        Self: Sized;
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -82,16 +89,30 @@ pub fn default_view() -> Box<dyn View> {
         Some(Constraint::BottomParent(temp_margin)),
     );
 
-    center.set_bounds(Some(Bounds::Pixels(350.)), Some(Bounds::Pixels(100.)));
+    center.set_bounds(Some(Bounds::Pixels(350.)), Some(Bounds::Pixels(350.)));
 
     let mut center_top = ColorRectView::new(127, 0, 127);
 
     center_top.set_constraints(
-        None,
+        Some(Constraint::Bottom(0., 4)),
+        // None,
         // Some(Constraint::Left(0., 4)),
         None,
-        Some(Constraint::Right(0., 4)),
-        Some(Constraint::Top(20., 4)),
+        // None,
+        Some(Constraint::Left(10., 4)),
+        Some(Constraint::Top(0., 4)),
+    );
+
+    let mut inside_top = ColorRectView::new(127, 0, 127);
+
+    inside_top.set_constraints(
+        Some(Constraint::Bottom(0., 4)),
+        // None,
+        // Some(Constraint::Left(0., 4)),
+        None,
+        // None,
+        Some(Constraint::Right(10., 4)),
+        Some(Constraint::Top(0., 4)),
     );
 
     Box::new(ConstraintLayout::new(vec![
@@ -101,6 +122,7 @@ pub fn default_view() -> Box<dyn View> {
         Box::new(d),
         Box::new(center),
         Box::new(center_top),
+        Box::new(inside_top),
     ]))
 
     // Box::new(VerticalLayout::new(vec![

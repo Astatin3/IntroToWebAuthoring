@@ -45,7 +45,30 @@ impl View for ColorRectView {
         // log!("Draw");
     }
 
-    fn resize(&mut self, x: f32, y: f32, w: f32, h: f32) {}
+    fn resize(&mut self, _x: f32, _y: f32, _w: f32, _h: f32) {}
+
+    fn from_tag(attributes: &std::collections::HashMap<String, String>) -> Self
+    where
+        Self: Sized,
+    {
+        let r = attributes
+            .get("r")
+            .unwrap_or(&"0".to_string())
+            .parse()
+            .unwrap();
+        let g = attributes
+            .get("g")
+            .unwrap_or(&"0".to_string())
+            .parse()
+            .unwrap();
+        let b = attributes
+            .get("b")
+            .unwrap_or(&"0".to_string())
+            .parse()
+            .unwrap();
+
+        Self::new(r, g, b)
+    }
 }
 
 impl LayoutView for ColorRectView {

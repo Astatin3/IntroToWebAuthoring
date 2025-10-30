@@ -96,46 +96,55 @@ impl ConstraintLayout {
                 crate::views::Bounds::Pixels(x) => x,
             };
 
-            let y_align = |constraint: &Option<Constraint>| match constraint {
-                Some(Constraint::TopParent(margin)) => Some(self_top + margin),
-                Some(Constraint::BottomParent(margin)) => Some(self_bottom - margin),
-                Some(Constraint::Top(margin, id)) => {
-                    let other = calculated_positions.get(&id).unwrap();
-                    Some(other.y - margin)
-                }
+            let y_align = |constraint: &Option<Constraint>, margin_reverse: bool| {
+                let margin_mult = if margin_reverse { -1. } else { 1. };
+                match constraint {
+                    Some(Constraint::TopParent(margin)) => Some(self_top + margin * margin_mult),
+                    Some(Constraint::BottomParent(margin)) => {
+                        Some(self_bottom + margin * margin_mult)
+                    }
+                    Some(Constraint::Top(margin, id)) => {
+                        let other = calculated_positions.get(&id).unwrap();
+                        Some(other.y + margin * margin_mult)
+                    }
 
-                Some(Constraint::Bottom(margin, id)) => {
-                    let other = calculated_positions.get(&id).unwrap();
-                    Some(other.y + other.height + margin)
+                    Some(Constraint::Bottom(margin, id)) => {
+                        let other = calculated_positions.get(&id).unwrap();
+                        Some(other.y + other.height + margin * margin_mult)
+                    }
+                    None => None,
+                    _ => unreachable!(),
                 }
-                None => None,
-                _ => unreachable!(),
             };
 
-            let y = match (y_align(c_top), y_align(c_bottom)) {
+            let y = match (y_align(c_top, false), y_align(c_bottom, true)) {
                 (Some(top), Some(bottom)) => (bottom + top - c_height) / 2.,
                 (Some(top), None) => top,
                 (None, Some(bottom)) => bottom - c_height,
                 (None, None) => unreachable!("Vertically unconstrained"),
             };
 
-            let x_align = |constraint: &Option<Constraint>| match constraint {
-                Some(Constraint::LeftParent(margin)) => Some(self_left + margin),
-                Some(Constraint::RightParent(margin)) => Some(self_right - margin),
-                Some(Constraint::Left(margin, id)) => {
-                    let other = calculated_positions.get(&id).unwrap();
-                    Some(other.x - margin)
+            let x_align = |constraint: &Option<Constraint>, margin_reverse: bool| {
+                let margin_mult = if margin_reverse { -1. } else { 1. };
+                match constraint {
+                    Some(Constraint::LeftParent(margin)) => Some(self_left + margin * margin_mult),
+                    Some(Constraint::RightParent(margin)) => {
+                        Some(self_right + margin * margin_mult)
+                    }
+                    Some(Constraint::Left(margin, id)) => {
+                        let other = calculated_positions.get(&id).unwrap();
+                        Some(other.x + margin * margin_mult)
+                    }
+                    Some(Constraint::Right(margin, id)) => {
+                        let other = calculated_positions.get(&id).unwrap();
+                        Some(other.x + other.width + margin * margin_mult)
+                    }
+                    None => None,
+                    _ => unreachable!(),
                 }
-
-                Some(Constraint::Right(margin, id)) => {
-                    let other = calculated_positions.get(&id).unwrap();
-                    Some(other.x + other.width - margin)
-                }
-                None => None,
-                _ => unreachable!(),
             };
 
-            let x = match (x_align(c_left), x_align(c_right)) {
+            let x = match (x_align(c_left, false), x_align(c_right, true)) {
                 (Some(left), Some(right)) => (right + left - c_width) / 2.,
                 (Some(left), None) => left,
                 (None, Some(right)) => right - c_width,
@@ -169,6 +178,13 @@ impl View for ConstraintLayout {
 
     fn resize(&mut self, x: f32, y: f32, w: f32, h: f32) {
         self.recalculate_positions(x, y, w, h);
+    }
+
+    fn from_tag(attributes: &std::collections::HashMap<String, String>) -> Self
+    where
+        Self: Sized,
+    {
+        todo!()
     }
 }
 

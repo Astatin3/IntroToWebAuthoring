@@ -1,4 +1,4 @@
-// use crate::render::rand;
+use crate::render::rand;
 
 pub struct ImgBuffer {
     pub data: Vec<u8>,
@@ -15,14 +15,14 @@ impl ImgBuffer {
         }
     }
 
-    // pub fn randomize(&mut self, rand: &mut rand::Rnd) {
-    //     for pixel in self.data.chunks_mut(4) {
-    //         pixel[0] = rand.next_i32() as u8;
-    //         pixel[1] = pixel[0];
-    //         pixel[2] = pixel[0];
-    //         pixel[3] = 255;
-    //     }
-    // }
+    pub fn randomize(&mut self, rand: &mut rand::Rnd) {
+        for pixel in self.data.chunks_mut(4) {
+            pixel[0] = rand.next_i32() as u8;
+            pixel[1] = pixel[0];
+            pixel[2] = pixel[0];
+            pixel[3] = 255;
+        }
+    }
 
     pub fn overlay_bitmap(&mut self, other: &Bitmap, xoffset: usize, yoffset: usize) {
         let length = self.data.len();

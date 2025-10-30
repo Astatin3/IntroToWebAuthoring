@@ -1,5 +1,6 @@
 mod app;
 mod fonts;
+mod parser;
 mod render;
 mod views;
 
@@ -12,6 +13,7 @@ use render::rand::Rnd;
 
 use crate::{
     app::{App, Cursor, set_cursor},
+    parser::TEST_XML,
     render::Renderer,
 };
 
