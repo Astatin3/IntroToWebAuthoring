@@ -39,21 +39,13 @@ impl TextView {
 
         s
     }
+    pub fn set_bounds(&mut self, width: Option<Bounds>, height: Option<Bounds>) {
+        self.bounds = (width, height);
+    }
 }
 
 impl View for TextView {
     fn draw(&mut self, renderer: &mut Renderer, x: f32, y: f32, w: f32, h: f32) {
-        // renderer.rasterize_font(
-        //     x as i32,
-        //     y as i32,
-        //     &self.text,
-        //     20.,
-        //     FontHandle::AtiksonHyperlegibleRegular,
-        // );
-        // renderer.
-
-        // renderer.rect_xywh(x as i32, y as i32, w as i32, h as i32, self.color);
-
         let (x, y) = renderer.undistort(x as f32, y as f32);
 
         let (mut width, mut height): (usize, usize) = (0, 0);
@@ -82,12 +74,13 @@ impl View for TextView {
 
         // new_bitmap
     }
+
+    fn resize(&mut self, x: f32, y: f32, w: f32, h: f32) {
+        // todo!()
+    }
 }
 
 impl LayoutView for TextView {
-    fn set_bounds(&mut self, width: Option<Bounds>, height: Option<Bounds>) {
-        self.bounds = (width, height);
-    }
     fn bounds(&self, _ph: f32, _pw: f32) -> (Bounds, Bounds) {
         // let (x, y) = renderer.undistort(x as f32, y as f32);
 

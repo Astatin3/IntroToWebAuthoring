@@ -25,29 +25,10 @@ impl ColorRectView {
             constraints: (None, None, None, None),
         }
     }
-}
-
-impl View for ColorRectView {
-    fn draw(&mut self, renderer: &mut Renderer, x: f32, y: f32, w: f32, h: f32) {
-        renderer.rect_xywh(x as i32, y as i32, w as i32, h as i32, self.color);
-        // log!("Draw");
-    }
-}
-
-impl LayoutView for ColorRectView {
-    fn set_bounds(&mut self, width: Option<Bounds>, height: Option<Bounds>) {
+    pub fn set_bounds(&mut self, width: Option<Bounds>, height: Option<Bounds>) {
         self.bounds = (width, height);
     }
-    fn bounds(&self, _ph: f32, _pw: f32) -> (Bounds, Bounds) {
-        (
-            *self.bounds.0.as_ref().unwrap_or(&Bounds::Pixels(100.)),
-            self.bounds.1.unwrap_or(Bounds::Pixels(100.)),
-        )
-    }
-}
-
-impl ConstraintView for ColorRectView {
-    fn set_constraints(
+    pub fn set_constraints(
         &mut self,
         top: Option<Constraint>,
         left: Option<Constraint>,
@@ -56,7 +37,27 @@ impl ConstraintView for ColorRectView {
     ) {
         self.constraints = (top, left, right, bottom)
     }
+}
 
+impl View for ColorRectView {
+    fn draw(&mut self, renderer: &mut Renderer, x: f32, y: f32, w: f32, h: f32) {
+        renderer.rect_xywh(x as i32, y as i32, w as i32, h as i32, self.color);
+        // log!("Draw");
+    }
+
+    fn resize(&mut self, x: f32, y: f32, w: f32, h: f32) {}
+}
+
+impl LayoutView for ColorRectView {
+    fn bounds(&self, _ph: f32, _pw: f32) -> (Bounds, Bounds) {
+        (
+            *self.bounds.0.as_ref().unwrap_or(&Bounds::Pixels(100.)),
+            *self.bounds.1.as_ref().unwrap_or(&Bounds::Pixels(100.)),
+        )
+    }
+}
+
+impl ConstraintView for ColorRectView {
     fn get_constraints(
         &self,
     ) -> (

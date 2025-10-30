@@ -1,4 +1,3 @@
-// mod activities;
 mod app;
 mod fonts;
 mod render;

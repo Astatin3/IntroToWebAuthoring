@@ -1,7 +1,6 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 
 use crate::{
-    log,
     render::Renderer,
     views::{LayoutView, View},
 };
@@ -19,13 +18,6 @@ pub enum Constraint {
 }
 
 pub trait ConstraintView: LayoutView {
-    fn set_constraints(
-        &mut self,
-        top: Option<Constraint>,
-        left: Option<Constraint>,
-        right: Option<Constraint>,
-        bottom: Option<Constraint>,
-    );
     fn get_constraints(
         &self,
     ) -> (
@@ -38,7 +30,7 @@ pub trait ConstraintView: LayoutView {
 
 pub struct ConstraintLayout {
     pub children: Vec<Box<dyn ConstraintView>>,
-    child_positions: Option<Vec<Rect>>,
+    child_positions: Option<HashMap<usize, Rect>>,
 }
 
 struct Rect {
@@ -63,35 +55,13 @@ impl ConstraintLayout {
             );
         }
 
-        let this = ConstraintLayout {
+        ConstraintLayout {
             children,
             child_positions: None,
-        };
-
-        this.test();
-
-        this
-    }
-    pub fn test(&self) {
-        let dependencies = self
-            .children
-            .iter()
-            .map(|c| {
-                let constraints = c.get_constraints();
-                [constraints.0, constraints.1, constraints.2, constraints.3]
-            })
-            .collect::<Vec<_>>();
-
-        let dac = topological_sort(&dependencies);
-
-        for i in 0..dac.len() {
-            log!("{:?}", dac[i])
         }
     }
-}
 
-impl View for ConstraintLayout {
-    fn draw(&mut self, renderer: &mut Renderer, x: f32, y: f32, self_w: f32, self_h: f32) {
+    pub fn recalculate_positions(&mut self, x: f32, y: f32, self_w: f32, self_h: f32) {
         let self_top = y;
         let self_left = x;
         let self_right = x + self_w;
@@ -126,46 +96,40 @@ impl View for ConstraintLayout {
                 crate::views::Bounds::Pixels(x) => x,
             };
 
-            let (y, height) = match (c_top, c_bottom) {
-                (None, None) => unreachable!("Vertically unconstrained"),
-                (Some(Constraint::TopParent(top_margin)), None) => {
-                    (self_top + top_margin, c_height)
+            let y_align = |constraint: &Option<Constraint>| match constraint {
+                Some(Constraint::TopParent(margin)) => Some(self_top + margin),
+                Some(Constraint::BottomParent(margin)) => Some(self_bottom - margin),
+                Some(Constraint::Top(margin, id)) => {
+                    let other = calculated_positions.get(&id).unwrap();
+                    Some(other.y - margin)
                 }
-                (Some(Constraint::BottomParent(top_margin)), None) => {
-                    (self_top + top_margin + c_height, c_height)
+
+                Some(Constraint::Bottom(margin, id)) => {
+                    let other = calculated_positions.get(&id).unwrap();
+                    Some(other.y + other.height + margin)
                 }
-                (None, Some(Constraint::TopParent(top_margin))) => {
-                    (self_top - top_margin, c_height)
-                }
-                (None, Some(Constraint::BottomParent(bottom_margin))) => {
-                    (self_h - (bottom_margin + c_height), c_height)
-                }
-                (Some(Constraint::TopParent(_)), Some(Constraint::TopParent(_))) => unreachable!(),
-                (Some(Constraint::BottomParent(_)), Some(Constraint::BottomParent(_))) => {
-                    unreachable!()
-                }
-                (Some(Constraint::BottomParent(_)), Some(Constraint::TopParent(_))) => {
-                    unreachable!()
-                }
-                (Some(Constraint::TopParent(_)), Some(Constraint::BottomParent(top_margin))) => {
-                    (self_top + top_margin + c_height, c_height)
-                }
-                _ => todo!(),
+                None => None,
+                _ => unreachable!(),
             };
 
-            assert!(height >= 0.);
+            let y = match (y_align(c_top), y_align(c_bottom)) {
+                (Some(top), Some(bottom)) => (bottom + top - c_height) / 2.,
+                (Some(top), None) => top,
+                (None, Some(bottom)) => bottom - c_height,
+                (None, None) => unreachable!("Vertically unconstrained"),
+            };
 
             let x_align = |constraint: &Option<Constraint>| match constraint {
                 Some(Constraint::LeftParent(margin)) => Some(self_left + margin),
                 Some(Constraint::RightParent(margin)) => Some(self_right - margin),
                 Some(Constraint::Left(margin, id)) => {
                     let other = calculated_positions.get(&id).unwrap();
-                    Some(other.x - margin - c_width)
+                    Some(other.x - margin)
                 }
 
                 Some(Constraint::Right(margin, id)) => {
                     let other = calculated_positions.get(&id).unwrap();
-                    Some(other.x + other.width + margin)
+                    Some(other.x + other.width - margin)
                 }
                 None => None,
                 _ => unreachable!(),
@@ -178,82 +142,33 @@ impl View for ConstraintLayout {
                 (None, None) => unreachable!("Horizontally unconstrained"),
             };
 
-            // let (x, width) = match (c_left, c_right) {
-            //     (None, None) => unreachable!("Vertically unconstrained"),
-            //     (Some(Constraint::LeftParent(left_margin)), None) => {
-            //         (self_top + left_margin, width)
-            //     }
-            //     (Some(Constraint::RightParent(right_margin)), None) => {
-            //         (self_top - right_margin + width, width)
-            //     }
-            //     (None, Some(Constraint::LeftParent(left_margin))) => {
-            //         (self_top - left_margin, width)
-            //     }
-            //     (None, Some(Constraint::RightParent(right_margin))) => {
-            //         (self_w - (right_margin + width), width)
-            //         // (self_top + top_margin + height, height)
-            //     }
-            //     (Some(Constraint::Left(left_margin, n)), None) => {
-            //         let other = calculated_positions.get(n).unwrap();
-            //         (other.x - (width + left_margin), width)
-            //     }
-            //     (Some(Constraint::Right(right_margin, idx)), None) => {
-            //         (self_top - right_margin + width, width)
-            //     }
-            //     (None, Some(Constraint::Left(left_margin, idx))) => (self_top - left_margin, width),
-            //     (None, Some(Constraint::Right(right_margin, idx))) => {
-            //         (self_w - (right_margin + width), width)
-            //         // (self_top + top_margin + height, height)
-            //     }
-            //     (Some(Constraint::LeftParent(_)), Some(Constraint::LeftParent(_))) => {
-            //         unreachable!()
-            //     }
-            //     (Some(Constraint::RightParent(_)), Some(Constraint::RightParent(_))) => {
-            //         unreachable!()
-            //     }
-            //     (Some(Constraint::RightParent(_)), Some(Constraint::LeftParent(_))) => {
-            //         unreachable!()
-            //     }
-            //     (Some(Constraint::TopParent(_)), Some(Constraint::BottomParent(top_margin))) => {
-            //         (self_top + top_margin + width, width)
-            //     }
-            //     _ => todo!(),
-            // };
-
-            assert!(c_width >= 0.);
-
             calculated_positions.insert(
                 idx,
                 Rect {
                     x: x,
                     y: y,
                     width: c_width,
-                    height: height,
+                    height: c_height,
                 },
             );
-            child.draw(renderer, x, y, c_width, height);
-
-            // match c_top {
-            //     None => {}
-            //     Some(Constraint::TopParent(top_margin)) => {
-
-            //         // let child_top = self_top + top_margin;
-            //         // let child_left = self_left;
-            //         // let child_right = self_right;
-            //         // let child_bottom = child_top + child.get_height();
-
-            //         // child.draw(renderer, child_left, child_top, child_right - child_left, child_bottom - child_top);
-            //     }
-            //     _ => unreachable!(),
-            // }
-
-            // match
-
-            // let child_top = child_top.unwrap_or(self_top);
-            // let child_left = child_left.unwrap_or(self_left);
-            // let child_right = child_right.unwrap_or(self_right);
-            // let child_bottom = child_bottom.unwrap_or(self_bottom);
         }
+
+        self.child_positions = Some(calculated_positions);
+    }
+}
+
+impl View for ConstraintLayout {
+    fn draw(&mut self, renderer: &mut Renderer, _x: f32, _y: f32, _self_w: f32, _self_h: f32) {
+        if let Some(child_positions) = &mut self.child_positions {
+            for i in 0..self.children.len() {
+                let rect = child_positions.get(&i).unwrap();
+                self.children[i].draw(renderer, rect.x, rect.y, rect.width, rect.height);
+            }
+        }
+    }
+
+    fn resize(&mut self, x: f32, y: f32, w: f32, h: f32) {
+        self.recalculate_positions(x, y, w, h);
     }
 }
 
@@ -323,9 +238,3 @@ fn get_dependency(constraint: &Constraint) -> Option<usize> {
         _ => None, // Parent constraints have no dependencies
     }
 }
-
-// impl LayoutView for ConstraintLayout {
-//     fn set_bounds(&mut self, width: Option<Bounds>, height: Option<Bounds>) {
-//         // Implement bounds setting logic here
-//     }
-// }

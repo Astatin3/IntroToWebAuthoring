@@ -14,6 +14,7 @@ use vertical_layout::VerticalLayout;
 
 pub trait View {
     fn draw(&mut self, renderer: &mut Renderer, x: f32, y: f32, w: f32, h: f32);
+    fn resize(&mut self, x: f32, y: f32, w: f32, h: f32);
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -23,7 +24,7 @@ pub enum Bounds {
 }
 
 pub trait LayoutView: View {
-    fn set_bounds(&mut self, width: Option<Bounds>, height: Option<Bounds>);
+    // fn set_bounds(&mut self, width: Option<Bounds>, height: Option<Bounds>);
     fn bounds(&self, pw: f32, ph: f32) -> (Bounds, Bounds);
 }
 
@@ -39,9 +40,11 @@ pub fn default_view() -> Box<dyn View> {
     a.set_constraints(
         Some(Constraint::TopParent(temp_margin)),
         None,
-        Some(Constraint::Left(temp_margin, 2)),
-        Some(Constraint::BottomParent(temp_margin)),
+        Some(Constraint::Left(temp_margin, 1)),
+        None,
+        // Some(Constraint::BottomParent(temp_margin)),
     );
+    a.set_bounds(Some(Bounds::Pixels(200.)), Some(Bounds::Pixels(100.)));
 
     let mut b = ColorRectView::new(0, 127, 0);
 
@@ -70,11 +73,34 @@ pub fn default_view() -> Box<dyn View> {
         Some(Constraint::BottomParent(temp_margin)),
     );
 
+    let mut center = ColorRectView::new(127, 127, 0);
+
+    center.set_constraints(
+        Some(Constraint::TopParent(temp_margin)),
+        Some(Constraint::LeftParent(temp_margin)),
+        Some(Constraint::RightParent(temp_margin)),
+        Some(Constraint::BottomParent(temp_margin)),
+    );
+
+    center.set_bounds(Some(Bounds::Pixels(350.)), Some(Bounds::Pixels(100.)));
+
+    let mut center_top = ColorRectView::new(127, 0, 127);
+
+    center_top.set_constraints(
+        None,
+        // Some(Constraint::Left(0., 4)),
+        None,
+        Some(Constraint::Right(0., 4)),
+        Some(Constraint::Top(20., 4)),
+    );
+
     Box::new(ConstraintLayout::new(vec![
         Box::new(a),
         Box::new(b),
         Box::new(c),
         Box::new(d),
+        Box::new(center),
+        Box::new(center_top),
     ]))
 
     // Box::new(VerticalLayout::new(vec![

@@ -1,26 +1,13 @@
 mod cursors;
 
-use std::time::Instant;
-
 pub use cursors::{Cursor, set_cursor};
 
 use wasm_bindgen::prelude::wasm_bindgen;
 
 use crate::{
-    log,
     render::Renderer,
     views::{View, default_view},
 };
-
-pub trait Activity {
-    fn new() -> Self
-    where
-        Self: Sized;
-    fn update(&mut self, dt: f32);
-    fn draw(&self, renderer: &mut Renderer, state: &AppState);
-    fn l_click(&mut self, renderer: &mut Renderer, state: &AppState);
-    fn mouse_move(&mut self, renderer: &mut Renderer, state: &AppState);
-}
 
 #[wasm_bindgen]
 pub struct App {
@@ -47,12 +34,18 @@ impl AppState {
 
 impl App {
     pub fn new(renderer: Renderer) -> Self {
-        App {
+        let (width, height) = (renderer.actual_width, renderer.actual_height);
+
+        let mut this = App {
             root_view: Some(default_view()),
             renderer,
             // current_activity: Some(0),
             state: AppState::new(),
-        }
+        };
+
+        this.resize(width, height);
+
+        this
     }
 
     pub fn draw(&mut self) {
@@ -72,6 +65,9 @@ impl App {
 impl App {
     pub fn resize(&mut self, width: usize, height: usize) {
         self.renderer.resize(width, height);
+        if let Some(view) = &mut self.root_view {
+            view.resize(0., 0., width as f32, height as f32);
+        }
         self.draw();
     }
 

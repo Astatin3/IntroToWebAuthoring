@@ -12,6 +12,9 @@ impl VerticalLayout {
             bounds: (None, None),
         }
     }
+    pub fn set_bounds(&mut self, width: Option<Bounds>, height: Option<Bounds>) {
+        self.bounds = (width, height);
+    }
 }
 
 impl View for VerticalLayout {
@@ -38,13 +41,10 @@ impl View for VerticalLayout {
             }
         }
     }
+    fn resize(&mut self, x: f32, y: f32, w: f32, h: f32) {}
 }
 
 impl LayoutView for VerticalLayout {
-    fn set_bounds(&mut self, width: Option<Bounds>, height: Option<Bounds>) {
-        self.bounds = (width, height);
-    }
-
     fn bounds(&self, pw: f32, ph: f32) -> (Bounds, Bounds) {
         let (mut maxx, mut totaly): (f32, f32) = (0., 0.);
         for view in &self.views {
