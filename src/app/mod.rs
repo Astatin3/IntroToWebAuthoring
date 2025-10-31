@@ -5,9 +5,10 @@ pub use cursors::{Cursor, set_cursor};
 use wasm_bindgen::prelude::wasm_bindgen;
 
 use crate::{
+    log,
     parser::{self, TEST_XML},
     render::Renderer,
-    views::{View, default_view},
+    views::View,
 };
 
 #[wasm_bindgen]
@@ -38,6 +39,7 @@ impl App {
         let (width, height) = (renderer.actual_width, renderer.actual_height);
 
         let root_view = parser::parse(TEST_XML);
+        log!("root: {:?}", root_view);
 
         let mut this = App {
             root_view: Some(root_view),

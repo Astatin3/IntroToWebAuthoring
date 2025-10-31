@@ -1,38 +1,23 @@
-use std::collections::HashMap;
-
-use crate::{
-    render::Renderer,
-    views::{LayoutView, View},
+use std::{
+    any::{Any, TypeId},
+    collections::HashMap,
 };
 
-pub enum Constraint {
-    Left(f32, usize),
-    Right(f32, usize),
-    Top(f32, usize),
-    Bottom(f32, usize),
+use crate::{
+    log,
+    parser::Tag,
+    render::Renderer,
+    views::{Constraint, View, box_view::BoxView},
+};
 
-    LeftParent(f32),
-    RightParent(f32),
-    TopParent(f32),
-    BottomParent(f32),
-}
-
-pub trait ConstraintView: LayoutView {
-    fn get_constraints(
-        &self,
-    ) -> (
-        &Option<Constraint>,
-        &Option<Constraint>,
-        &Option<Constraint>,
-        &Option<Constraint>,
-    );
-}
-
+#[derive(Debug)]
 pub struct ConstraintLayout {
-    pub children: Vec<Box<dyn ConstraintView>>,
+    pub children: Vec<BoxView>,
     child_positions: Option<HashMap<usize, Rect>>,
+    child_order: Option<Vec<usize>>,
 }
 
+#[derive(Debug)]
 struct Rect {
     x: f32,
     y: f32,
@@ -41,7 +26,7 @@ struct Rect {
 }
 
 impl ConstraintLayout {
-    pub fn new(children: Vec<Box<dyn ConstraintView>>) -> Self {
+    pub fn new(children: Vec<BoxView>) -> Self {
         for child in &children {
             let (top, left, right, bottom) = child.get_constraints();
 
@@ -55,10 +40,15 @@ impl ConstraintLayout {
             );
         }
 
-        ConstraintLayout {
+        let mut this = ConstraintLayout {
             children,
             child_positions: None,
-        }
+            child_order: None,
+        };
+
+        this.recalculate_child_render_order();
+
+        this
     }
 
     pub fn recalculate_positions(&mut self, x: f32, y: f32, self_w: f32, self_h: f32) {
@@ -69,19 +59,11 @@ impl ConstraintLayout {
 
         let mut calculated_positions: HashMap<usize, Rect> = HashMap::new();
 
-        let dependencies = self
-            .children
-            .iter()
-            .map(|c| {
-                let constraints = c.get_constraints();
-                [constraints.0, constraints.1, constraints.2, constraints.3]
-            })
-            .collect::<Vec<_>>();
+        let child_order = self.child_order.as_ref().unwrap();
+        for idx in child_order {
+            let child: &mut BoxView = &mut self.children[*idx];
 
-        let sorted = topological_sort(&dependencies);
-
-        for idx in sorted {
-            let child = &mut self.children[idx];
+            log!("{:?}", child.get_constraints());
 
             let (c_top, c_left, c_right, c_bottom) = child.get_constraints();
             let (c_width, c_height) = child.bounds(self_w, self_h);
@@ -152,7 +134,7 @@ impl ConstraintLayout {
             };
 
             calculated_positions.insert(
-                idx,
+                *idx,
                 Rect {
                     x: x,
                     y: y,
@@ -163,6 +145,19 @@ impl ConstraintLayout {
         }
 
         self.child_positions = Some(calculated_positions);
+    }
+
+    pub fn recalculate_child_render_order(&mut self) {
+        let dependencies = self
+            .children
+            .iter()
+            .map(|c| {
+                let constraints = c.get_constraints();
+                [constraints.0, constraints.1, constraints.2, constraints.3]
+            })
+            .collect::<Vec<_>>();
+
+        self.child_order = Some(topological_sort(&dependencies));
     }
 }
 
@@ -180,11 +175,30 @@ impl View for ConstraintLayout {
         self.recalculate_positions(x, y, w, h);
     }
 
-    fn from_tag(attributes: &std::collections::HashMap<String, String>) -> Self
+    fn from_tag(
+        attributes: &std::collections::HashMap<String, String>,
+        children: &Vec<Tag>,
+    ) -> Box<dyn View>
     where
         Self: Sized,
     {
-        todo!()
+        let mut parsed_children = Vec::new();
+
+        for child in children {
+            let child = child.parse();
+
+            if let Ok(b) = child.as_any().downcast::<BoxView>() {
+                parsed_children.push(*b);
+            } else {
+                panic!("Constraint Layout must contain only BoxView!")
+            }
+        }
+
+        Box::new(Self::new(parsed_children))
+    }
+
+    fn as_any(self: Box<Self>) -> Box<dyn std::any::Any> {
+        self
     }
 }
 
@@ -219,7 +233,8 @@ fn dfs(
     result: &mut Vec<usize>,
 ) {
     if states[node] == VisitState::Visiting {
-        panic!("Cycle detected in constraint graph at node {}", node);
+        log!("Cycle detected in constraint graph at node {}", node);
+        panic!();
     }
 
     if states[node] == VisitState::Visited {

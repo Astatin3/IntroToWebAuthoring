@@ -1,12 +1,18 @@
-use crate::views::{Bounds, LayoutView, View};
+use std::collections::HashMap;
 
+use crate::{
+    parser::Tag,
+    views::{Bounds, View, box_view::BoxView},
+};
+
+#[derive(Debug)]
 pub struct VerticalLayout {
-    pub views: Vec<Box<dyn LayoutView>>,
+    pub views: Vec<BoxView>,
     pub bounds: (Option<Bounds>, Option<Bounds>),
 }
 
 impl VerticalLayout {
-    pub fn new(views: Vec<Box<dyn LayoutView>>) -> Self {
+    pub fn new(views: Vec<BoxView>) -> Self {
         Self {
             views,
             bounds: (None, None),
@@ -42,34 +48,43 @@ impl View for VerticalLayout {
         }
     }
     fn resize(&mut self, x: f32, y: f32, w: f32, h: f32) {}
-    fn from_tag(attributes: &std::collections::HashMap<String, String>) -> Self
+
+    fn from_tag(attributes: &HashMap<String, String>, children: &Vec<Tag>) -> Box<dyn View>
     where
         Self: Sized,
     {
-        todo!()
+        todo!("");
+        // Box::new(Self {
+        //     views: children.iter().map(|tag| tag.parse()).collect(),
+        //     bounds: (None, None),
+        // })
+    }
+
+    fn as_any(self: Box<Self>) -> Box<dyn std::any::Any> {
+        self
     }
 }
 
-impl LayoutView for VerticalLayout {
-    fn bounds(&self, pw: f32, ph: f32) -> (Bounds, Bounds) {
-        let (mut maxx, mut totaly): (f32, f32) = (0., 0.);
-        for view in &self.views {
-            let (vx, vy) = view.bounds(pw, ph);
+// impl LayoutView for VerticalLayout {
+//     fn bounds(&self, pw: f32, ph: f32) -> (Bounds, Bounds) {
+//         let (mut maxx, mut totaly): (f32, f32) = (0., 0.);
+//         for view in &self.views {
+//             let (vx, vy) = view.bounds(pw, ph);
 
-            let vx = match vx {
-                super::Bounds::MatchParent => pw,
-                super::Bounds::Pixels(x) => x,
-            };
+//             let vx = match vx {
+//                 super::Bounds::MatchParent => pw,
+//                 super::Bounds::Pixels(x) => x,
+//             };
 
-            let vy = match vy {
-                super::Bounds::MatchParent => ph,
-                super::Bounds::Pixels(x) => x,
-            };
+//             let vy = match vy {
+//                 super::Bounds::MatchParent => ph,
+//                 super::Bounds::Pixels(x) => x,
+//             };
 
-            maxx = maxx.max(vx);
-            totaly += vy;
-        }
+//             maxx = maxx.max(vx);
+//             totaly += vy;
+//         }
 
-        (Bounds::Pixels(maxx), Bounds::Pixels(totaly))
-    }
-}
+//         (Bounds::Pixels(maxx), Bounds::Pixels(totaly))
+//     }
+// }

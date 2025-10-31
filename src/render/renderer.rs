@@ -1,13 +1,7 @@
-use fontdue::layout::{CoordinateSystem, Layout, LayoutSettings, TextStyle};
 use wasm_bindgen::{Clamped, prelude::*};
 use web_sys::ImageData;
 
-use crate::render::{
-    RESOLUTION,
-    buffer::{Bitmap, ImgBuffer},
-    calc_resolution,
-    rand::Rnd,
-};
+use crate::render::{RESOLUTION, buffer::ImgBuffer, calc_resolution, rand::Rnd};
 
 #[wasm_bindgen]
 pub struct Renderer {

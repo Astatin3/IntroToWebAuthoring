@@ -51,9 +51,15 @@ fn parse_tag(event: BytesStart<'_>, reader: &mut Reader<&[u8]>) -> Tag {
 
     loop {
         match reader.read_event_into(&mut buf) {
-            Err(e) => panic!("Error at position {}: {:?}", reader.error_position(), e),
+            Err(e) => {
+                log!("Error at position {}: {:?}", reader.error_position(), e);
+                panic!()
+            }
             // exits the loop when reaching end of file
-            Ok(Event::Eof) => panic!("Unexpected end of file"),
+            Ok(Event::Eof) => {
+                log!("Unexpected end of file");
+                panic!()
+            }
 
             Ok(Event::Start(e)) => {
                 children.push(parse_tag(e, reader));

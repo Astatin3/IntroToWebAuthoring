@@ -1,9 +1,12 @@
 use fontdue::layout::{CoordinateSystem, Layout, LayoutSettings, TextStyle};
 
+use std::fmt::Debug;
+
 use crate::{
     fonts::{FONTS, FontHandle},
+    parser::Tag,
     render::{Renderer, buffer::Bitmap},
-    views::{Bounds, LayoutView, View},
+    views::{Bounds, View},
 };
 
 pub struct TextView {
@@ -11,7 +14,6 @@ pub struct TextView {
     text: String,
     scale: f32,
     font: FontHandle,
-    bounds: (Option<Bounds>, Option<Bounds>),
 }
 
 impl TextView {
@@ -27,7 +29,6 @@ impl TextView {
             text,
             scale: 20.,
             font: FontHandle::AtiksonHyperlegibleRegular,
-            bounds: (None, None),
         };
 
         let font = (s.font as usize).clone();
@@ -38,9 +39,6 @@ impl TextView {
             .append(&FONTS, &TextStyle::new(&s.text, s.scale, font));
 
         s
-    }
-    pub fn set_bounds(&mut self, width: Option<Bounds>, height: Option<Bounds>) {
-        self.bounds = (width, height);
     }
 }
 
@@ -79,24 +77,44 @@ impl View for TextView {
         // todo!()
     }
 
-    fn from_tag(attributes: &std::collections::HashMap<String, String>) -> Self
+    fn from_tag(
+        attributes: &std::collections::HashMap<String, String>,
+        children: &Vec<Tag>,
+    ) -> Box<dyn View>
     where
         Self: Sized,
     {
+        assert!(children.is_empty(), "TextView does not support children");
         todo!()
+        // Self::new(attributes)
+    }
+
+    fn as_any(self: Box<Self>) -> Box<dyn std::any::Any> {
+        self
     }
 }
 
-impl LayoutView for TextView {
-    fn bounds(&self, _ph: f32, _pw: f32) -> (Bounds, Bounds) {
-        // let (x, y) = renderer.undistort(x as f32, y as f32);
+// impl LayoutView for TextView {
+//     fn bounds(&self, _ph: f32, _pw: f32) -> (Bounds, Bounds) {
+//         // let (x, y) = renderer.undistort(x as f32, y as f32);
 
-        let (mut width, mut height): (usize, usize) = (0, 0);
-        for glyph in self.layout.glyphs() {
-            width = width.max(glyph.x as usize + glyph.width);
-            height = height.max(glyph.y as usize + glyph.height);
-        }
+//         let (mut width, mut height): (usize, usize) = (0, 0);
+//         for glyph in self.layout.glyphs() {
+//             width = width.max(glyph.x as usize + glyph.width);
+//             height = height.max(glyph.y as usize + glyph.height);
+//         }
 
-        (Bounds::Pixels(width as f32), Bounds::Pixels(height as f32))
+//         (Bounds::Pixels(width as f32), Bounds::Pixels(height as f32))
+//     }
+// }
+
+impl Debug for TextView {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("TextView")
+            // .field("layout", &self.layout)
+            .field("text", &self.text)
+            .field("scale", &self.scale)
+            .field("font", &self.font)
+            .finish()
     }
 }
