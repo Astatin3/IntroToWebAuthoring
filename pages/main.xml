@@ -67,6 +67,19 @@
                     font_size="30."
                 /></BoxView>
 
+
+                <BoxView width="parent" height="60" />
+                <BoxView height="30">
+                    <TextView
+                    text="Also, I previously had another version of this website that had the tabs required."
+                    font_size="30."
+                /></BoxView>
+                <BoxView height="30">
+                    <TextView
+                    text="for the student portfolio assignment. Tell me if you want me to re-host it to grade."
+                    font_size="30."
+                /></BoxView>
+
             </VerticalLayout>
     </BoxView>
 
