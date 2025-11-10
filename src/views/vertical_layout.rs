@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 use crate::{
     parser::Tag,
+    render::Renderer,
     views::{Bounds, View, box_view::BoxView},
 };
 
@@ -47,7 +48,7 @@ impl View for VerticalLayout {
             }
         }
     }
-    fn resize(&mut self, x: f32, y: f32, w: f32, h: f32) {}
+    fn resize(&mut self, renderer: &mut Renderer, x: f32, y: f32, w: f32, h: f32) {}
 
     fn from_tag(attributes: &HashMap<String, String>, children: &Vec<Tag>) -> Box<dyn View>
     where

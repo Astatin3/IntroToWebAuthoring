@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use crate::{
     log,
-    views::{Bounds, BoxView, ColorRectView, ConstraintLayout, View},
+    views::{Bounds, BoxView, ColorRectView, ConstraintLayout, TextView, View},
 };
 
 mod parser;
@@ -22,6 +22,7 @@ impl Tag {
             "ColoredRectView" => ColorRectView::from_tag(&self.attributes, &self.children),
             "ConstraintLayout" => ConstraintLayout::from_tag(&self.attributes, &self.children),
             "BoxView" => BoxView::from_tag(&self.attributes, &self.children),
+            "TextView" => TextView::from_tag(&self.attributes, &self.children),
 
             _ => panic!("Unknown tag: {}", self.name),
         }

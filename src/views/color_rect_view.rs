@@ -21,7 +21,7 @@ impl View for ColorRectView {
         // log!("Draw");
     }
 
-    fn resize(&mut self, _x: f32, _y: f32, _w: f32, _h: f32) {}
+    fn resize(&mut self, _renderer: &mut Renderer, _x: f32, _y: f32, _w: f32, _h: f32) {}
 
     fn from_tag(
         attributes: &std::collections::HashMap<String, String>,

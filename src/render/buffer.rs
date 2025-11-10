@@ -1,9 +1,9 @@
 use crate::render::rand;
 
 pub struct ImgBuffer {
-    pub data: Vec<u8>,
-    width: usize,
-    height: usize,
+    pub(crate) data: Vec<u8>,
+    pub(crate) width: usize,
+    pub(crate) height: usize,
 }
 
 impl ImgBuffer {
@@ -21,25 +21,6 @@ impl ImgBuffer {
             pixel[1] = pixel[0];
             pixel[2] = pixel[0];
             pixel[3] = 255;
-        }
-    }
-
-    pub fn overlay_bitmap(&mut self, other: &Bitmap, xoffset: usize, yoffset: usize) {
-        let length = self.data.len();
-        for y in 0..other.height {
-            for x in 0..other.width {
-                // Calculate the offset for the current pixel in the buffer
-                // This uses bitshift instead of multiplication x4 for performance
-                let offset = ((y + yoffset) * self.width + (x + xoffset)) << 2;
-                if offset >= length {
-                    return;
-                }
-                let color = other.data[y * other.width + x];
-                self.data[offset] = color;
-                self.data[offset + 1] = color;
-                self.data[offset + 2] = color;
-                self.data[offset + 3] = 255;
-            }
         }
     }
 

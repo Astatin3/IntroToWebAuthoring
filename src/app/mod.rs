@@ -5,7 +5,7 @@ pub use cursors::{Cursor, set_cursor};
 use wasm_bindgen::prelude::wasm_bindgen;
 
 use crate::{
-    log,
+    AppErr, log,
     parser::{self, TEST_XML},
     render::Renderer,
     views::View,
@@ -35,7 +35,7 @@ impl AppState {
 }
 
 impl App {
-    pub fn new(renderer: Renderer) -> Self {
+    pub fn new(renderer: Renderer) -> Result<Self, AppErr> {
         let (width, height) = (renderer.actual_width, renderer.actual_height);
 
         let root_view = parser::parse(TEST_XML);
@@ -48,12 +48,12 @@ impl App {
             state: AppState::new(),
         };
 
-        this.resize(width, height);
+        this.resize(width, height)?;
 
-        this
+        Ok(this)
     }
 
-    pub fn draw(&mut self) {
+    pub fn draw(&mut self) -> Result<(), AppErr> {
         // self.renderer.img.randomize(&mut self.renderer.rand);
         if let Some(view) = &mut self.root_view {
             let (width, height) = (
@@ -64,31 +64,38 @@ impl App {
             view.draw(&mut self.renderer, 0., 0., width, height);
             self.renderer.update();
         }
+
+        Ok(())
     }
 }
 
 // App events
 impl App {
-    pub fn resize(&mut self, width: usize, height: usize) {
+    pub fn resize(&mut self, width: usize, height: usize) -> Result<(), AppErr> {
         self.renderer.resize(width, height);
         if let Some(view) = &mut self.root_view {
-            view.resize(0., 0., width as f32, height as f32);
+            view.resize(&mut self.renderer, 0., 0., width as f32, height as f32);
         }
         self.draw();
+        Ok(())
     }
 
-    pub fn mouse_move(&mut self, x: f32, y: f32) {
+    pub fn mouse_move(&mut self, x: f32, y: f32) -> Result<(), AppErr> {
         self.state.mouse_x = x;
         self.state.mouse_y = y;
+
+        Ok(())
 
         // if let Some(current_activity) = self.current_activity {
         //     self.activities[current_activity].mouse_move(&mut self.renderer, &self.state);
         // }
     }
 
-    pub fn l_click(&mut self, x: f32, y: f32) {
+    pub fn l_click(&mut self, x: f32, y: f32) -> Result<(), AppErr> {
         self.state.mouse_x = x;
         self.state.mouse_y = y;
+
+        Ok(())
 
         // if let Some(current_activity) = self.current_activity {
         //     self.activities[current_activity].l_click(&mut self.renderer, &self.state);

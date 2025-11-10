@@ -171,7 +171,7 @@ impl View for ConstraintLayout {
         }
     }
 
-    fn resize(&mut self, x: f32, y: f32, w: f32, h: f32) {
+    fn resize(&mut self, _renderer: &mut Renderer, x: f32, y: f32, w: f32, h: f32) {
         self.recalculate_positions(x, y, w, h);
     }
 

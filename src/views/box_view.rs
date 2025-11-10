@@ -67,8 +67,8 @@ impl View for BoxView {
         self.view.draw(renderer, x, y, w, h);
     }
 
-    fn resize(&mut self, x: f32, y: f32, w: f32, h: f32) {
-        self.view.resize(x, y, w, h);
+    fn resize(&mut self, renderer: &mut Renderer, x: f32, y: f32, w: f32, h: f32) {
+        self.view.resize(renderer, x, y, w, h);
     }
 
     fn from_tag(

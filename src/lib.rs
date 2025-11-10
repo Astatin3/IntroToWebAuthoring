@@ -4,6 +4,8 @@ mod parser;
 mod render;
 mod views;
 
+use std::error::Error;
+
 use wasm_bindgen::{Clamped, prelude::*};
 use web_sys::ImageData;
 
@@ -16,6 +18,14 @@ use crate::{
     parser::TEST_XML,
     render::Renderer,
 };
+
+#[derive(Debug)]
+pub enum AppErr {
+    ParseErr(String),
+    RenderErr(String),
+    ArrangeErr(String),
+    RasterErr(String),
+}
 
 #[wasm_bindgen]
 extern "C" {
@@ -35,28 +45,54 @@ pub fn init(canvas: &web_sys::HtmlCanvasElement, width: usize, height: usize) ->
     let mut renderer = Renderer::new(canvas, width, height);
     renderer.resize(width, height);
 
-    App::new(renderer)
+    match App::new(renderer) {
+        Ok(app) => app,
+        Err(e) => {
+            log!("Error initializing: {:?}", e);
+            panic!();
+        }
+    }
 }
 
 #[wasm_bindgen]
 pub fn resize(app: &mut App, width: usize, height: usize) {
-    app.resize(width, height);
+    match app.resize(width, height) {
+        Ok(_) => {}
+        Err(e) => {
+            log!("Error resizing: {:?}", e);
+        }
+    }
 }
 
 #[wasm_bindgen]
 pub fn draw(app: &mut App) {
     // app.renderer.img.randomize(&mut app.renderer.rand);
-    app.draw();
+    match app.draw() {
+        Ok(_) => {}
+        Err(e) => {
+            log!("Error drawing: {:?}", e);
+        }
+    }
 }
 
 #[wasm_bindgen]
 pub fn click(app: &mut App, x: f32, y: f32) {
     // ctx.img.randomize(&mut ctx.rand);
     // draw::draw(ctx);
-    app.l_click(x, y);
+    match app.l_click(x, y) {
+        Ok(_) => {}
+        Err(e) => {
+            log!("Error on click: {:?}", e);
+        }
+    }
 }
 
 #[wasm_bindgen]
 pub fn mouse_move(app: &mut App, x: f32, y: f32) {
-    app.mouse_move(x, y);
+    match app.mouse_move(x, y) {
+        Ok(_) => {}
+        Err(e) => {
+            log!("Error on mouse move: {:?}", e);
+        }
+    }
 }

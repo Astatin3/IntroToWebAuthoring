@@ -1,8 +1,4 @@
-use std::{
-    any::{Any, TypeId},
-    collections::HashMap,
-    fmt::Debug,
-};
+use std::{any::Any, collections::HashMap, fmt::Debug};
 
 use crate::{parser::Tag, render::Renderer};
 
@@ -15,10 +11,11 @@ mod vertical_layout;
 pub use box_view::BoxView;
 pub use color_rect_view::ColorRectView;
 pub use constraint_layout::ConstraintLayout;
+pub use text_view::TextView;
 
 pub trait View: Debug {
     fn draw(&mut self, renderer: &mut Renderer, x: f32, y: f32, w: f32, h: f32);
-    fn resize(&mut self, x: f32, y: f32, w: f32, h: f32);
+    fn resize(&mut self, renderer: &mut Renderer, x: f32, y: f32, w: f32, h: f32);
 
     fn from_tag(attributes: &HashMap<String, String>, children: &Vec<Tag>) -> Box<dyn View>
     where

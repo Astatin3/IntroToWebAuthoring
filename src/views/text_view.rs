@@ -4,20 +4,21 @@ use std::fmt::Debug;
 
 use crate::{
     fonts::{FONTS, FontHandle},
+    log,
     parser::Tag,
-    render::{Renderer, buffer::Bitmap},
+    render::{RESOLUTION, Renderer, buffer::Bitmap},
     views::{Bounds, View},
 };
 
 pub struct TextView {
-    layout: Layout,
-    text: String,
-    scale: f32,
-    font: FontHandle,
+    pub layout: Layout,
+    pub text: String,
+    pub scale: f32,
+    pub font: FontHandle,
 }
 
 impl TextView {
-    pub fn new(text: String) -> Self {
+    pub fn new(text: String, scale: f32) -> Self {
         let mut layout = Layout::new(CoordinateSystem::PositiveYDown);
 
         layout.reset(&LayoutSettings {
@@ -27,7 +28,7 @@ impl TextView {
         let mut s = Self {
             layout,
             text,
-            scale: 20.,
+            scale,
             font: FontHandle::AtiksonHyperlegibleRegular,
         };
 
@@ -68,13 +69,24 @@ impl View for TextView {
 
         let scaled = new_bitmap.scale(renderer.ratio_x, renderer.ratio_y);
 
-        renderer.img.overlay_bitmap(&scaled, x as usize, y as usize);
+        renderer
+            .img
+            .overlay_bitmap_fg(&scaled, x as usize, y as usize, (255, 255, 255));
 
         // new_bitmap
     }
 
-    fn resize(&mut self, x: f32, y: f32, w: f32, h: f32) {
-        // todo!()
+    fn resize(&mut self, renderer: &mut Renderer, _x: f32, _y: f32, _w: f32, _h: f32) {
+        self.layout.clear();
+
+        let font = (self.font as usize).clone();
+        let e = (renderer.canvas_height as f32 / renderer.actual_height as f32)
+            * (renderer.canvas_width as f32 / renderer.actual_width as f32);
+
+        let scale = self.scale * e;
+
+        self.layout
+            .append(&FONTS, &TextStyle::new(&self.text, scale, font));
     }
 
     fn from_tag(
@@ -85,8 +97,20 @@ impl View for TextView {
         Self: Sized,
     {
         assert!(children.is_empty(), "TextView does not support children");
-        todo!()
-        // Self::new(attributes)
+
+        let text = attributes.get("text").unwrap();
+
+        let mut scale = 30.;
+
+        if let Some(font_size_str) = attributes.get("font_size") {
+            if let Some(font_size) = font_size_str.parse::<f32>().ok() {
+                scale = font_size;
+            }
+        }
+
+        let this = Self::new(text.clone(), scale);
+
+        Box::new(this)
     }
 
     fn as_any(self: Box<Self>) -> Box<dyn std::any::Any> {

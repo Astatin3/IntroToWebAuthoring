@@ -1,4 +1,5 @@
 pub mod buffer;
+pub mod buffer_overlay;
 pub mod rand;
 mod renderer;
 
@@ -13,6 +14,7 @@ pub fn calc_resolution(width: usize, height: usize) -> (usize, usize, f32, f32) 
 
     let new_width = (distortion_x * RESOLUTION as f32).round() as usize;
     let new_height = (distortion_y * RESOLUTION as f32).round() as usize;
+
     (new_width, new_height, distortion_x, distortion_y)
 }
 
