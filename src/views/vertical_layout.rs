@@ -54,7 +54,20 @@ impl View for VerticalLayout {
     where
         Self: Sized,
     {
-        todo!("");
+        let mut parsed_children = Vec::new();
+
+        for child in children {
+            let child = child.parse();
+
+            if let Ok(b) = child.as_any().downcast::<BoxView>() {
+                parsed_children.push(*b);
+            } else {
+                panic!("Constraint Layout must contain only BoxView!")
+            }
+        }
+
+        Box::new(Self::new(parsed_children))
+
         // Box::new(Self {
         //     views: children.iter().map(|tag| tag.parse()).collect(),
         //     bounds: (None, None),

@@ -9,7 +9,8 @@ use crate::{
 
 #[derive(Debug)]
 pub struct BoxView {
-    view: Box<dyn View>,
+    // view: Box<dyn View>,
+    views: Vec<Box<dyn View>>,
     bounds: (Option<Bounds>, Option<Bounds>),
     constraints: (
         Option<Constraint>,
@@ -20,9 +21,9 @@ pub struct BoxView {
 }
 
 impl BoxView {
-    pub fn new(view: Box<dyn View>) -> Self {
+    pub fn new(views: Vec<Box<dyn View>>) -> Self {
         Self {
-            view,
+            views,
             bounds: (None, None),
             constraints: (None, None, None, None),
         }
@@ -64,18 +65,25 @@ impl BoxView {
 
 impl View for BoxView {
     fn draw(&mut self, renderer: &mut Renderer, x: f32, y: f32, w: f32, h: f32) {
-        self.view.draw(renderer, x, y, w, h);
+        for view in &mut self.views {
+            view.draw(renderer, x, y, w, h);
+        }
     }
 
     fn resize(&mut self, renderer: &mut Renderer, x: f32, y: f32, w: f32, h: f32) {
-        self.view.resize(renderer, x, y, w, h);
+        for view in &mut self.views {
+            view.resize(renderer, x, y, w, h);
+        }
     }
 
     fn from_tag(
         attributes: &std::collections::HashMap<String, String>,
         children: &Vec<Tag>,
     ) -> Box<dyn View> {
-        assert!(children.len() == 1, "BoxView must have exactly one child");
+        // assert!(
+        //     children.len() >= 1,
+        //     "BoxView must have greater than one child"
+        // );
 
         let (mut margin_top, mut margin_left, mut margin_right, mut margin_bottom) =
             (None, None, None, None);
@@ -192,13 +200,14 @@ impl View for BoxView {
                 _ => {}
             }
         }
+        let views = children.iter().map(|c| c.parse()).collect();
 
-        let mut b = Self::new(children[0].parse());
+        let mut this = Self::new(views);
 
-        b.constraints = (align_top, align_left, align_right, align_bottom);
-        b.bounds = Tag::parse_bounds(attributes);
+        this.constraints = (align_top, align_left, align_right, align_bottom);
+        this.bounds = Tag::parse_bounds(attributes);
 
-        Box::new(b)
+        Box::new(this)
     }
 
     fn as_any(self: Box<Self>) -> Box<dyn std::any::Any> {

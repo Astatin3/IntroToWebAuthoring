@@ -1,28 +1,80 @@
 <ConstraintLayout>
     <BoxView
-        margin_left="10"
-        margin_right="10"
         align_top_to_top="parent"
         align_left_to_left="parent"
         align_bottom_to_bottom="parent"
         align_right_to_right="parent"
-        width="400"
+        width="1200"
         height="parent"
     >
-            <ColoredRectView r="30" g="30" b="30" />
-    </BoxView>
-
-    <BoxView margin="10" align_top_to_top="parent" align_left_to_left="parent">
-            <ColoredRectView r="123" g="12" b="34" />
+            <ColoredRectView r="60" g="30" b="30" />
     </BoxView>
 
     <BoxView
-        margin="10"
         align_top_to_top="parent"
-        align_left_to_right="2"
+        align_left_to_left="parent"
         align_bottom_to_bottom="parent"
-        width="200"
+        align_right_to_right="parent"
+        width="1150"
+        height="parent"
     >
-        <TextView text="12345\nThis is a testing!" font_size="30." />
+
+            <VerticalLayout>
+                <BoxView width="parent" height="60" />
+                <BoxView width="parent" height="30">
+                    <TextView
+                    text="This is a webpage that is NOT made in HTML!"
+                    font_size="30."
+                /></BoxView>
+
+                <!-- First Paragraph -->
+                <BoxView width="parent" height="60" />
+                <BoxView height="30">
+                    <TextView
+                    text="Modern web browsers have a function called 'WebAssembly' that runs compiled,"
+                    font_size="30."
+                />
+                </BoxView>
+                <BoxView height="30">
+                    <TextView
+                    text="high performance code in place of JavaScript. Additionally, there is an element"
+                    font_size="30."
+                />
+                </BoxView>
+                <BoxView height="30">
+                    <TextView
+                    text="called '<canvas>' that can be used to draw graphics."
+                    font_size="30."
+                />
+                </BoxView>
+
+
+                <!-- Second Paragraph -->
+                <BoxView width="parent" height="60" />
+                <BoxView height="30">
+                    <TextView
+                    text="Instead of working on any kind of sane programming language, I have been working"
+                    font_size="30."
+                /></BoxView>
+                <BoxView height="30">
+                    <TextView
+                    text="to essentially write my own version of HTML inside WebAssembly. If you open the"
+                    font_size="30."
+                /></BoxView>
+                <BoxView height="30">
+                    <TextView
+                    text="browser's developer tools, you will see the very strange looking HTML."
+                    font_size="30."
+                /></BoxView>
+
+            </VerticalLayout>
+    </BoxView>
+
+    <BoxView width="300" height="100"
+        align_left_to_left="parent"
+        align_top_to_top="parent"
+        align_right_to_right="parent"
+    >
+        <TextView text="Hello!" font_size="60." />
     </BoxView>
 </ConstraintLayout>
