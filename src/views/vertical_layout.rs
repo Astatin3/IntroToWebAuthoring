@@ -39,10 +39,12 @@ impl View for VerticalLayout {
             let vy = match vy {
                 super::Bounds::MatchParent => h,
                 super::Bounds::Pixels(x) => x,
-            };
+            } + view.get_top_margin();
 
             view.draw(renderer, x, cur_y, w.min(vx), vy);
-            cur_y += vy;
+
+            cur_y += vy + view.get_bottom_margin();
+
             if cur_y > h {
                 return;
             }

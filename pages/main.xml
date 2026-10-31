@@ -1,89 +1,73 @@
 <ConstraintLayout>
+    <!-- Sidebar -->
     <BoxView
         align_top_to_top="parent"
         align_left_to_left="parent"
-        align_bottom_to_bottom="parent"
-        align_right_to_right="parent"
-        width="1200"
+        width="300"
+        margin_left="10"
         height="parent"
     >
-            <ColoredRectView r="60" g="30" b="30" />
+        <ColoredRectView r="10" g="20" b="40" />
+
+        <VerticalLayout>
+            <BoxView width="parent" height="45" margin_bottom="10">
+                <ColoredRectView r="127" g="127" b="127" />
+                <TextView
+                    text="Home"
+                    font_size="40."/>
+            </BoxView>
+
+            <BoxView width="parent" height="45" margin_bottom="10">
+                <ColoredRectView r="127" g="20" b="19" />
+                <TextView
+                    text="Red"
+                    font_size="40."/>
+            </BoxView>
+
+            <BoxView width="parent" height="45" margin_bottom="10">
+                <ColoredRectView r="20" g="127" b="20" />
+                <TextView
+                    text="Blue"
+                    font_size="40."/>
+            </BoxView>
+
+
+            <BoxView width="parent" height="45" margin_bottom="10">
+                <ColoredRectView r="20" g="21" b="127" />
+                <TextView
+                    text="Green"
+                    font_size="40."/>
+            </BoxView>
+
+
+
+
+        </VerticalLayout>
     </BoxView>
 
     <BoxView
         align_top_to_top="parent"
-        align_left_to_left="parent"
         align_bottom_to_bottom="parent"
-        align_right_to_right="parent"
-        width="1150"
+        align_left_to_right="1"
+        width="900"
         height="parent"
     >
+            <ColoredRectView r="60" g="30" b="30" />
 
             <VerticalLayout>
                 <BoxView width="parent" height="60" />
+
                 <BoxView width="parent" height="30">
                     <TextView
-                    text="This is a webpage that is NOT made in HTML!"
-                    font_size="30."
-                /></BoxView>
-
-                <!-- First Paragraph -->
-                <BoxView width="parent" height="60" />
-                <BoxView height="30">
-                    <TextView
-                    text="Modern web browsers have a function called 'WebAssembly' that runs compiled,"
-                    font_size="30."
-                />
-                </BoxView>
-                <BoxView height="30">
-                    <TextView
-                    text="high performance code in place of JavaScript. Additionally, there is an element"
-                    font_size="30."
-                />
-                </BoxView>
-                <BoxView height="30">
-                    <TextView
-                    text="called '<canvas>' that can be used to draw graphics."
-                    font_size="30."
-                />
-                </BoxView>
-
-
-                <!-- Second Paragraph -->
-                <BoxView width="parent" height="60" />
-                <BoxView height="30">
-                    <TextView
-                    text="Instead of working on any kind of sane programming language, I have been working"
-                    font_size="30."
-                /></BoxView>
-                <BoxView height="30">
-                    <TextView
-                    text="to essentially write my own version of HTML inside WebAssembly. If you open the"
-                    font_size="30."
-                /></BoxView>
-                <BoxView height="30">
-                    <TextView
-                    text="browser's developer tools, you will see the very strange looking HTML."
-                    font_size="30."
-                /></BoxView>
-
-
-                <BoxView width="parent" height="60" />
-                <BoxView height="30">
-                    <TextView
-                    text="Also, I previously had another version of this website that had the tabs required."
-                    font_size="30."
-                /></BoxView>
-                <BoxView height="30">
-                    <TextView
-                    text="for the student portfolio assignment. Tell me if you want me to re-host it to grade."
+                    text="EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
+EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE"
                     font_size="30."
                 /></BoxView>
 
             </VerticalLayout>
     </BoxView>
 
-    <BoxView width="300" height="100"
+    <BoxView width="100" height="100"
         align_left_to_left="parent"
         align_top_to_top="parent"
         align_right_to_right="parent"

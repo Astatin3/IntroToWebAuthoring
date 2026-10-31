@@ -61,6 +61,20 @@ impl BoxView {
             &self.constraints.3,
         )
     }
+
+    pub fn get_top_margin(&self) -> f32 {
+        match self.constraints.0 {
+            Some(Constraint::Margin(x)) => x,
+            _ => 0.,
+        }
+    }
+
+    pub fn get_bottom_margin(&self) -> f32 {
+        match self.constraints.3 {
+            Some(Constraint::Margin(x)) => x,
+            _ => 0.,
+        }
+    }
 }
 
 impl View for BoxView {
@@ -200,6 +214,20 @@ impl View for BoxView {
                 _ => {}
             }
         }
+
+        if align_top.is_none() && margin_top.is_some() {
+            align_top = Some(Constraint::Margin(margin_top.unwrap()))
+        }
+        if align_left.is_none() && margin_left.is_some() {
+            align_top = Some(Constraint::Margin(margin_left.unwrap()))
+        }
+        if align_bottom.is_none() && margin_bottom.is_some() {
+            align_bottom = Some(Constraint::Margin(margin_bottom.unwrap()))
+        }
+        if align_right.is_none() && margin_right.is_some() {
+            align_top = Some(Constraint::Margin(margin_right.unwrap()))
+        }
+
         let views = children.iter().map(|c| c.parse()).collect();
 
         let mut this = Self::new(views);

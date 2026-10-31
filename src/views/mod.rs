@@ -42,6 +42,8 @@ pub enum Constraint {
     RightParent(f32),
     TopParent(f32),
     BottomParent(f32),
+
+    Margin(f32),
 }
 
 // pub trait ConstraintView: View {
