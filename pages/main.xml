@@ -1,4 +1,34 @@
 <ConstraintLayout>
+    <BoxView
+        align_top_to_top="parent"
+        align_bottom_to_bottom="parent"
+        align_left_to_right="2"
+        width="900"
+        height="parent"
+    >
+            <ColoredRectView r="60" g="30" b="30" />
+
+            <VerticalLayout>
+                <BoxView width="parent" height="60" />
+
+                <BoxView width="parent" height="30">
+                    <TextView
+                    text="EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
+EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE"
+                    font_size="30."
+                /></BoxView>
+
+            </VerticalLayout>
+    </BoxView>
+
+    <BoxView width="100" height="100"
+        align_left_to_left="parent"
+        align_top_to_top="parent"
+        align_right_to_right="parent"
+    >
+        <TextView text="Hello!" font_size="60." />
+    </BoxView>
+
     <!-- Sidebar -->
     <BoxView
         align_top_to_top="parent"
@@ -45,35 +75,5 @@
 
 
         </VerticalLayout>
-    </BoxView>
-
-    <BoxView
-        align_top_to_top="parent"
-        align_bottom_to_bottom="parent"
-        align_left_to_right="1"
-        width="900"
-        height="parent"
-    >
-            <ColoredRectView r="60" g="30" b="30" />
-
-            <VerticalLayout>
-                <BoxView width="parent" height="60" />
-
-                <BoxView width="parent" height="30">
-                    <TextView
-                    text="EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
-EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE"
-                    font_size="30."
-                /></BoxView>
-
-            </VerticalLayout>
-    </BoxView>
-
-    <BoxView width="100" height="100"
-        align_left_to_left="parent"
-        align_top_to_top="parent"
-        align_right_to_right="parent"
-    >
-        <TextView text="Hello!" font_size="60." />
     </BoxView>
 </ConstraintLayout>
