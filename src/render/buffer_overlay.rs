@@ -75,8 +75,8 @@ impl ImgBuffer {
                 );
 
                 self.data[offset] = pixel_r;
-                self.data[offset + 1] = pixel_g;
-                self.data[offset + 2] = pixel_b;
+                self.data[offset + 1] = pixel_b;
+                self.data[offset + 2] = pixel_g;
                 self.data[offset + 3] = pixel_a;
 
                 //  = color;

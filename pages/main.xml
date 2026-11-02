@@ -10,6 +10,15 @@
         <ColoredRectView r="10" g="20" b="40" />
 
         <VerticalLayout>
+
+            <BoxView width="parent" height="45" margin_bottom="10">
+                <ColoredRectView r="20" g="20" b="127" />
+                <TextView
+                    text="Bluee"
+                    font_size="40."/>
+            </BoxView>
+
+
             <BoxView width="parent" height="45" margin_bottom="10">
                 <ColoredRectView r="127" g="127" b="127" />
                 <TextView
@@ -24,16 +33,9 @@
                     font_size="40."/>
             </BoxView>
 
-            <BoxView width="parent" height="45" margin_bottom="10">
-                <ColoredRectView r="20" g="127" b="20" />
-                <TextView
-                    text="Blue"
-                    font_size="40."/>
-            </BoxView>
-
 
             <BoxView width="parent" height="45" margin_bottom="10">
-                <ColoredRectView r="20" g="21" b="127" />
+                <ColoredRectView r="20" g="127" b="21" />
                 <TextView
                     text="Green"
                     font_size="40."/>
